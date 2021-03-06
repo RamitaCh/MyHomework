@@ -72,19 +72,21 @@
         final List<Todo> todos;
         List<String> bag = [];
         TodosScreen({Key key, @required this.todos}) : super(key: key);
+
         @override
         _TodosScreenState createState () {
-        return _TodosScreenState () ;
+          return _TodosScreenState () ;
         }
       }
 
       class _TodosScreenState extends State<TodosScreen> {
+
         @override
         Widget build(BuildContext context) {
           return Scaffold(
             appBar: AppBar(
               title : Text('Detective Bookstore'),
-            ) ,
+            ),
             body: ListView.builder(
               itemCount: widget.todos.length,
               itemBuilder: (context, index) {
@@ -98,15 +100,35 @@
                       context,
                       MaterialPageRoute(
                         builder: (context) => DetailScreen(todo: widget.todos[index], bag: widget.bag),
-                      ) ,
-                    ) ;
+                      ),
+                    );
                   },
-                ) ;
-
+                );
               },
-            ) ,
-
+            ),
+            bottomNavigationBar: BottomAppBar(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  ElevatedButton(
+                    onPressed: () {
+                      _sendDataToSecondScreen(context);
+                    },
+                    child: Text('Finish!'),
+                  ),
+                ],
+              ),
+            ),
           ) ;
+        }
+        void _sendDataToSecondScreen(BuildContext context) {
+          List<String> inBag = widget.bag ;
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => SecondPage(mybag: inBag,),
+              )
+          );
         }
       }
 
@@ -121,53 +143,56 @@
             appBar: AppBar(
               title : Text(todo.title ) ,
             ) ,
-            body:new Center(
-              child: new Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Image.asset(todo.image),
-                  SizedBox(height: 10,),
-                  Text(todo.title),
-                  Text(todo.description),
-                  SizedBox(height: 20,),
-                  ElevatedButton(
-                    onPressed: () {
-                      bag.add(todo.title);
-                      Navigator.pop(context, todo.title);
-                    },
-                    child: Text('Buy This') ,
+            body: SingleChildScrollView(
+              padding: EdgeInsets.only(left: 0, right: 0, top: 20, bottom: 20),
+                child: Center(
+                  child: Column(
+                    children: [
+                      Center(
+                        child: new Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Image.asset(todo.image),
+                            SizedBox(height: 10,),
+                            Text(todo.title),
+                            Text(todo.description),
+                            SizedBox(height: 20,),
+                            Row(
+                              children: [
+                                ElevatedButton(
+                                  onPressed: () {
+                                    bag.add(todo.title);
+                                    Navigator.pop(context, todo.title);
+                                  },
+                                  child: Text('Buy This') ,
+                                ),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.pop(context) ;
+                                  },
+                                  child: Text('Cancel') ,
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                  ElevatedButton(
-                    onPressed: () {
-                        Navigator.pop(context) ;
-                    },
-                    child: Text('Cancel') ,
-                  ),
-                  SizedBox(height: 10,),
-                  ElevatedButton(
-                    child: Text('Finish'),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                          MaterialPageRoute(builder: (context) => SecondPage(text: bag)),
-                      );
-                    },
-                  ) ,
-
-                ],
-              ),
+                ),
             ),
           ) ;
         }
       }
 
       class SecondPage extends StatelessWidget {
-        final List<String> text;
-        SecondPage({Key key, @required this.text}) : super(key: key);
+        final List<String> mybag;
+        SecondPage({Key key, @required this.mybag}) : super(key: key);
+
         @override
         Widget build(BuildContext context) {
-          print(text);
+          print(mybag.join(", "));
           return Scaffold(
             appBar: AppBar(
               title : Text("Second Screen"),
@@ -179,7 +204,9 @@
                     children: [
                       Text('You have select:'),
                       SizedBox(height: 10,),
-                      Text(text.toString()),
+                      Text(
+                          mybag.join("\n")
+                      ),
                       SizedBox(height: 10,),
                       ElevatedButton(
                         onPressed: () {
